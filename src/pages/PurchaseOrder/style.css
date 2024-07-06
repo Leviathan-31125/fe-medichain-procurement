@@ -1,0 +1,53 @@
+.cardPO {
+    width: 40%;
+}
+
+.cardSupplier {
+    width: 60%;
+}
+
+.p-disabled, .p-component-disabled {
+    opacity: 1 !important;
+}
+
+.select-button .p-button {
+    padding-block: 5px;
+}
+
+.p-panel-content {
+    padding-block: 15px;
+    padding-inline: 20px;
+}
+
+.p-inputnumber-input{
+    width: 100% !important;
+}
+
+.title-calculate {
+    margin-bottom: 0;
+}
+
+.calculate-number, .grand-total {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.calculate-number {
+    color: #54A4DE;
+}
+
+.grand-total {
+    font-weight: 700;
+    color: rgb(207, 134, 0);
+}
+
+@media screen and (max-width: 1000px) {
+    .cardPO {
+        width: 100%;
+    }
+    
+    .cardSupplier {
+        width: 100%;
+    }
+}
