@@ -6,6 +6,14 @@
     width: 60%;
 }
 
+.dropdown-destination {
+    width: 35%;
+}
+
+.input-destination {
+    width: 65%;
+}
+
 .p-disabled, .p-component-disabled {
     opacity: 1 !important;
 }
@@ -49,5 +57,13 @@
     
     .cardSupplier {
         width: 100%;
+    }
+
+    .dropdown-destination {
+        width: 50%;
+    }
+    
+    .input-destination {
+        width: 50%;
     }
 }

@@ -702,7 +702,94 @@ const AddStockSO = () => {
 
       <div className='row'>
         <div className='col-lg-6 col-12 mt-3 py-0'>
-          
+          <Panel header="Tambah Stok">
+            <div className='row'>
+              <div className='col-lg-6 col-12 py-0 pt-1'>
+                <label htmlFor="fc_stockcode" className='font-bold block mb-1'>Kode Barang</label>
+                <div className="p-inputgroup flex-1">
+                  <InputText 
+                    id='fc_stockcode'
+                    name='fc_stockcode'
+                    value={dataAddSODTL.fc_stockcode} 
+                    onChange={changeHandler} 
+                    placeholder="Pilih Stock" 
+                    disabled
+                  />
+                  <Button icon="pi pi-search" className="p-button-primary" onClick={() => setDialogListStock(true)} />
+                </div>
+              </div>
+              <div className='col-lg-6 col-12 py-0 pt-1'>
+                <label htmlFor="fm_price" className='font-bold block mb-1'>Harga</label>
+                <InputNumber 
+                  id='fm_price'
+                  name='fm_price'
+                  value={dataAddSODTL.fm_price} 
+                  className='w-full' 
+                  mode='currency'
+                  currency='IDR'
+                  locale='id-ID'
+                  min={1}
+                  onValueChange={changeHandler}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className='col-lg-5 col-sm-6 col-12 py-0 pt-1'>
+                <label htmlFor="fm_discprice" className='font-bold block mb-1'>Diskon</label>
+                <InputNumber 
+                  id='fm_discprice'
+                  name='fm_discprice'
+                  value={dataAddSODTL.fm_discprice} 
+                  className='w-full' 
+                  mode='currency'
+                  currency='IDR'
+                  locale='id-ID'
+                  min={0}
+                  onValueChange={changeHandler}
+                />
+              </div>
+              <div className='col-lg-2 col-sm-6 col-12 py-0 pt-1'>
+                <label htmlFor="fn_qty" className='font-bold block mb-1'>Qty</label>
+                <InputNumber 
+                  id='fn_qty'
+                  name='fn_qty'
+                  value={dataAddSODTL.fn_qty} 
+                  className='w-full'
+                  min={1}
+                  onValueChange={changeHandler}
+                />
+              </div>
+              <div className='col-lg-5 col-12 py-0 pt-1'>
+                <label htmlFor="ft_description" className='font-bold block mb-1'>Catatan</label>
+                <InputText 
+                  id='ft_description'
+                  name='ft_description'
+                  value={dataAddSODTL.ft_description} 
+                  className='w-full' 
+                  onChange={changeHandler}
+                />
+              </div>
+            </div>
+            <div className="d-flex gap-3 justify-content-end pt-2 mt-1">
+              <SelectButton 
+                id='fc_statusbonus'
+                name='fc_statusbonus'
+                value={dataAddSODTL.fc_statusbonus}
+                onChange={changeHandler} 
+                options={statusBonus} 
+                optionLabel='label' 
+                optionValue='value'
+                className='select-button'
+              />
+              <Button 
+                label='Tambahkan Stok' 
+                severity='success' 
+                className='buttonAction'
+                style={{paddingBlock: '5px'}}
+                onClick={() => addStock()}
+              />
+            </div>
+          </Panel>
         </div>
         <div className='col-lg-6 col-12 mt-3 py-0'>
           <Panel header="Kalkulasi">

@@ -73,7 +73,7 @@ const CreatePurchaseOrder = () => {
 
     const optionsGet = {
       method: 'get',
-      url: `${BASE_API_PROCUREMENT}/purchase-order/temp-po-mst/${pono}`,
+      url: `${BASE_API_PROCUREMENT}/purchase-order/temp-po-mst/check/${pono}`,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem('accessToken')
@@ -81,8 +81,9 @@ const CreatePurchaseOrder = () => {
     }
 
     await axios.request(optionsGet)
-      .then(() => {
-        navigate('/purchase-order/create')
+      .then((response) => {
+        if(response.data.available) navigate('/purchase-order/create');
+        else setLoading(false);
       })
       .catch(() => {
         setLoading(false)
