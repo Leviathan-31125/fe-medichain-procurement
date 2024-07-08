@@ -158,12 +158,7 @@ const AddStockPO = () => {
         setLoading(false);
       })
       .catch((error) => {
-        setErrorAttribut({
-          visibility: true,
-          headerTitle: "Gagal Load Data",
-          errorMessage: error.response.data.message
-        });
-        setLoading(false);
+        navigate('/purchase-order');
       })
   }
 
@@ -406,6 +401,7 @@ const AddStockPO = () => {
     getDetailPO();
     getListStock();
     getListWarehouse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
   const resetStockDTL = () => {
@@ -506,7 +502,7 @@ const AddStockPO = () => {
         cancelAction: () => setConfirmDialog((...currentData) => ({...currentData, visibility: false})),
         submitAction: () => cancelPOMST(),
         confirmMessage: "Yakin ingin membatalkan Purchase Order?",
-        headerTitle: "Cancel SO"
+        headerTitle: "Cancel PO"
       }))
     }
   }

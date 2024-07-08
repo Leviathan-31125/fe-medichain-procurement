@@ -12,9 +12,11 @@ import DetailPurchaseOrder from './pages/PurchaseOrder/DetailPurchaseOrder';
 import CreatePurchaseOrder from './pages/PurchaseOrder/CreatePurchaseOrder';
 import AddStockPO from './pages/PurchaseOrder/AddStockPO';
 import AddStockRO from './pages/ReceivingOrder/AddStockRO';
-import CreateReceivingOrder from './pages/ReceivingOrder/CreateReceivingOrder';
 import DetailReceivingOrder from './pages/ReceivingOrder/DetailReceivingOrder';
 import MasterReceivingOrder from './pages/ReceivingOrder/MasterReceivingOrder';
+import DetailPO from './pages/ReceivingOrder/DetailPO';
+import PreviewListPO from './pages/ReceivingOrder/PreviewListPO';
+import CreateReceivingOrder from './pages/ReceivingOrder/CreateReceivingOrder';
 
 
 function App() {
@@ -47,7 +49,7 @@ function App() {
             }  
           />
           <Route
-            path='/master-po/detail'
+            path='/master-po/detail/:id'
             element={
               <PrivateRoute>
                 <DetailPurchaseOrder/>
@@ -88,6 +90,22 @@ function App() {
           />
           <Route
             path='/receiving-order'
+            element={
+              <PrivateRoute>
+                <PreviewListPO/>
+              </PrivateRoute>
+            }  
+          />
+          <Route
+            path='/receiving-order/detail-po/:id'
+            element={
+              <PrivateRoute>
+                <DetailPO/>
+              </PrivateRoute>
+            }  
+          />
+          <Route
+            path='/receiving-order/create-mst'
             element={
               <PrivateRoute>
                 <CreateReceivingOrder/>

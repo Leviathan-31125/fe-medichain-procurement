@@ -1,20 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import PageLayout from '../../layouts/PageLayout/PageLayout'
-import Loading from '../../components/Loading/Loading'
-import ErrorDialog from '../../components/Dialog/ErrorDialog'
-import { useNavigate } from 'react-router-dom'
-import { Card } from 'primereact/card'
-import { DataTable } from 'primereact/datatable'
-import { FilterMatchMode } from 'primereact/api'
-import { Column } from 'primereact/column'
-import { BASE_API_PROCUREMENT, formatIDRCurrency, formattedDateWithOutTime, getSeverity } from '../../helpers'
-import axios from 'axios'
-import { Button } from 'primereact/button'
-import { Tag } from 'primereact/tag'
-import TableHeader from '../../components/TableHeader/TableHeader'
+import Loading from '../../components/Loading/Loading';
+import { Card } from 'primereact/card';
+import { DataTable } from 'primereact/datatable';
+import { FilterMatchMode } from 'primereact/api';
+import { Column } from 'primereact/column';
+import { BASE_API_PROCUREMENT, formatIDRCurrency, formattedDateWithOutTime, getSeverity } from '../../helpers';
+import TableHeader from '../../components/TableHeader/TableHeader';
+import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ErrorDialog from '../../components/Dialog/ErrorDialog';
+// import './style.css';
 
-const MasterPurchaseOrder = () => {
+const PreviewListPO = () => {
   const navigate = useNavigate();
+
+  // Dialog Handler 
+  const [loading, setLoading] = useState(false);
+  const [errorAttribut, setErrorAttribut] = useState({
+    visibility: false, 
+    headerTitle: "", 
+    errorMessage: ""
+  });
+
+  // Data Handler 
+  const [listMasterPO, setListMasterPO] = useState([]);
 
   // Filter primereact 
   const [ filters, setFilters ] = useState({
@@ -29,17 +41,6 @@ const MasterPurchaseOrder = () => {
     setFilters(_filters)
     setGlobalFilterValue(value)
   }
-
-  // Dialog handler 
-  const [loading, setLoading] = useState(false);
-  const [errorAttribut, setErrorAttribut] = useState({
-    visibility: false, 
-    headerTitle: "", 
-    errorMessage: ""
-  });
-
-  // Data handler 
-  const [listMasterPO, setListMasterPO] = useState([]);
 
   const getAllMasterPO = async () => {
     setLoading(true)
@@ -69,9 +70,36 @@ const MasterPurchaseOrder = () => {
       })
   }
 
+  const checkROMST = async () => {
+    setLoading(true);
+    const rono = window.btoa(localStorage.getItem('userId'));
+
+    const optionsGet = {
+      method: 'get',
+      url: `${BASE_API_PROCUREMENT}/receiving-order/temp-ro-mst/check/${rono}`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('accessToken')
+      }
+    }
+
+    await axios.request(optionsGet)
+      .then((response) => {
+        if(response.data.available) navigate('/receiving-order/create');
+        else setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
+    checkROMST();
     getAllMasterPO();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
 
   const renderHeader = () => {
     return <TableHeader
@@ -83,25 +111,37 @@ const MasterPurchaseOrder = () => {
 
   const actionBodyTemplate = (data) => (
     <div className="d-flex gap-2">
-      <Button className='buttonAction' outlined icon="pi pi-eye" severity='success' onClick={() => navigate(`/master-po/detail/${window.btoa(data.fc_pono)}`)}/>
+      <Button 
+        label='Pilih PO'
+        className='buttonAction' 
+        severity='success' 
+        onClick={() => navigate(`/receiving-order/detail-po/${window.btoa(data.fc_pono)}`)}
+        style={{
+          padding:  '8px',
+          fontSize: '14px'
+        }}
+      />
     </div>
   )
 
   const statusTemplate = (rowdata) => (
-    <Tag value={rowdata} severity={getSeverity("STATUS", rowdata)}></Tag>
+    <Tag 
+      value={rowdata} 
+      severity={getSeverity("STATUS", rowdata)}
+    />
   )
-
 
   return (
     <PageLayout>
       <Loading visibility={loading}/>
+
       <ErrorDialog 
         visibility={errorAttribut.visibility} 
         errorMessage={errorAttribut.errorMessage} 
         headerTitle={errorAttribut.headerTitle} 
         setAttribute={setErrorAttribut}
       />
-      
+
       <Card title="Daftar Purchase Order">
         <DataTable
           value={listMasterPO} dataKey='fc_pono'
@@ -136,11 +176,11 @@ const MasterPurchaseOrder = () => {
           <Column field='fc_potransport' header="Transport" sortable style={{minWidth: '10rem'}}></Column>
           <Column field='fv_destination' header="Destinasi" sortable style={{minWidth: '10rem'}}></Column>
           <Column field='ft_description' header="Catatan" sortable style={{minWidth: '10rem'}}></Column>
-          <Column body={actionBodyTemplate} ></Column>
+          <Column body={actionBodyTemplate} style={{minWidth: '10rem'}}></Column>
         </DataTable>
       </Card>
     </PageLayout>
   )
 }
 
-export default MasterPurchaseOrder
+export default PreviewListPO

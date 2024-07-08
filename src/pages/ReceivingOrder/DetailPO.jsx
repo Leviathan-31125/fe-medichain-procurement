@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
-import ErrorDialog from '../../components/Dialog/ErrorDialog';
-import { BASE_API_PROCUREMENT, formatIDRCurrency, formattedDateWithOutTime, getSeverity } from '../../helpers';
+import React, { useEffect, useState } from 'react';
 import PageLayout from '../../layouts/PageLayout/PageLayout';
-import { FilterMatchMode } from 'primereact/api';
-import { Card } from 'primereact/card';
+import { Panel } from 'primereact/panel';
 import { InputText } from 'primereact/inputtext';
+import { useNavigate, useParams } from 'react-router-dom';
+import { BASE_API_PROCUREMENT, formatIDRCurrency, formattedDateWithOutTime, getSeverity } from '../../helpers';
+import { Tag } from 'primereact/tag';
+import { InputNumber } from 'primereact/inputnumber';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import TableHeader from '../../components/TableHeader/TableHeader';
-import { DataTable } from 'primereact/datatable';
-import { Panel } from 'primereact/panel';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { InputNumber } from 'primereact/inputnumber';
-import { Tag } from 'primereact/tag';
-import './style.css';
-import axios from 'axios';
-import Loading from '../../components/Loading/Loading';
+import TableHeaderButton from '../../components/TableHeader/TableHeaderButton';
+import { FilterMatchMode } from 'primereact/api'
+import axios from 'axios'
+import Loading from '../../components/Loading/Loading'
 
-const DetailPurchaseOrder = () => {
+const DetailPO = () => {
   const navigate = useNavigate();
   const params = useParams();
   const {id} = params
 
+  // Data Handler 
   const [dataPO, setDataPO] = useState({
     fc_pono: localStorage.getItem("userId"),
     fc_suppliercode: "",
@@ -50,20 +49,20 @@ const DetailPurchaseOrder = () => {
     fm_accountpayable: "",
     fc_picname1: ""
   });
-  
-  // Dialog Handler
+  const [listRO, setListRO] = useState([]);
+
+  // Dialog Handler 
   const [loading, setLoading] = useState(false);
-  const [errorAttribut, setErrorAttribut] = useState({
-    visibility: false, 
-    headerTitle: "", 
-    errorMessage: ""
-  });
 
   // filter primereact 
   const [ filters, setFilters ] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   }) 
+  const [ ROfilters, setROFilters ] = useState({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  })
   const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [ROFilterValue, setROFilterValue] = useState('');
   const onGlobalFilterChange = (e) => {
     const value = e.target.value
     let _filters = {...filters}
@@ -71,6 +70,14 @@ const DetailPurchaseOrder = () => {
     _filters['global'].value = value
     setFilters(_filters)
     setGlobalFilterValue(value)
+  }
+  const onROFilterChange = (e) => {
+    const value = e.target.value
+    let _filters = {...ROfilters}
+
+    _filters['global'].value = value
+    setROFilters(_filters)
+    setROFilterValue(value)
   }
 
   const getDetailPO = async () => {
@@ -89,6 +96,7 @@ const DetailPurchaseOrder = () => {
       .then((response) => {
         setDataPO(response.data);
         setSupplier(response.data.supplier);
+        setListRO(response.data.romst);
 
         setLoading(false);
       })
@@ -102,25 +110,47 @@ const DetailPurchaseOrder = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const statusTemplate = (data) => (
-    getSeverity("STATUS_BONUS", data)
-  )
 
-  const renderHeader = () => {
+  const statusTemplate = (data, typeStatus) => {
+    if (typeStatus === "STOCK") return getSeverity("STATUS_BONUS", data)
+    else 
+      return (
+        <Tag value={data} severity={getSeverity("STATUS", data)}/>
+      )
+  }
+
+  const renderHeader = (icon, filter, onChangeFilter) => {
     return (
       <TableHeader
-        globalFilterValue={globalFilterValue}
-        onGlobalFilterChange={onGlobalFilterChange}
-        iconHeader="fas fa-boxes iconHeader"
+        globalFilterValue={filter}
+        onGlobalFilterChange={onChangeFilter}
+        iconHeader={icon}
       />
     );
   };
 
+  const renderHeaderButton = (icon, filter, onChangeFilter) => {
+    return (
+      <TableHeaderButton
+        globalFilterValue={filter}
+        onGlobalFilterChange={onChangeFilter}
+        iconHeader={icon}
+        actionButton={() => navigate('/receiving-order/create-mst', {state: {dataPO, supplier}})}
+        labelButton="Tambah RO +"
+      />
+    );
+  }
+
+  const actionBodyTemplate = (data) => (
+    <div className="d-flex gap-2">
+      <Button className='buttonAction' outlined icon="pi pi-eye" severity='success' onClick={() => navigate('/master-ro/detail', {state: data})}/>
+    </div>
+  )
+
   return (
     <PageLayout>
-      <ErrorDialog visibility={errorAttribut.visibility} errorMessage={errorAttribut.errorMessage} headerTitle={errorAttribut.headerTitle} setAttribute={setErrorAttribut}/>
       <Loading visibility={loading} />
-      
+
       <div className="flex gap-3">
         <Panel 
           header="Info SO" 
@@ -204,10 +234,27 @@ const DetailPurchaseOrder = () => {
         </Panel>
       </div>
 
-      <Card className='mt-3'>
-        <DataTable value={dataPO.podtl} tablestyle={{minwidth:'50rem'}} paginator rows={5} removableSort
-          rowsPerPageOptions={[5, 10, 25, 50]} dataKey='fc_barcode' scrollable header={() => renderHeader("fas fa-boxes iconHeader")} filters={filters} 
-          globalFilterFields={['fc_stockcode', 'fv_namestock', 'fv_namealias_stock', 'brand.fv_brandname', 'fc_typestock', 'fc_formstock', 'fc_namepack', 'fn_maxstock', 'fn_minstock', 'fm_purchase', 'fm_sales']}
+      <Panel header="List Order" className='mt-3' toggleable>
+        <DataTable 
+          value={dataPO.podtl} dataKey='fc_barcode'
+          tablestyle={{minwidth:'50rem'}} 
+          paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} 
+          removableSort scrollable 
+          header={() => renderHeader("fas fa-boxes iconHeader", globalFilterValue, onGlobalFilterChange)}
+          filters={filters} 
+          globalFilterFields={[
+            'fc_stockcode', 
+            'stock.fv_namestock', 
+            'fv_namealias_stock', 
+            'brand.fv_brandname', 
+            'fc_typestock', 
+            'fc_formstock', 
+            'fc_namepack', 
+            'fn_maxstock', 
+            'fn_minstock', 
+            'fm_purchase', 
+            'fm_sales'
+          ]}
         >
           <Column field='fn_rownum' header="No" sortable style={{minWidth: '3rem'}}></Column>
           <Column field='fc_stockcode' header="Katalog" sortable style={{minWidth: '15rem'}}></Column>
@@ -215,34 +262,34 @@ const DetailPurchaseOrder = () => {
           <Column field='fc_namepack' header="Satuan" sortable style={{minWidth: '10rem'}}></Column>
           <Column field='fn_qty' header="Pesanan" sortable style={{minWidth: '5rem'}}></Column>
           <Column field='fn_qty_ro' header="Terkirim" sortable style={{minWidth: '5rem'}}></Column>
-          <Column field='fc_statusbonus' header="Bonus" body={(data) => statusTemplate(data.fc_statusbonus)} style={{minWidth: '8rem'}}></Column>
+          <Column field='fc_statusbonus' header="Bonus" body={(data) => statusTemplate(data.fc_statusbonus, "STOCK")} style={{minWidth: '8rem'}}></Column>
           <Column field='ft_description' header="Deskripsi" style={{minWidth: '12rem'}}></Column>
         </DataTable>
-      </Card>
+      </Panel>
 
       <div className='row'>
         <div className='col-lg-6 col-12 mt-3 py-0'>
-        <Panel header="Atribut Tambahan">
-          <div className="row">
-            <div className='col-lg-6 col-12 mb-0'>
-              <label htmlFor="fc_potransport" className='font-bold block mb-1'>Transport</label>
-              <InputText value={dataPO.fc_potransport} className='w-full' disabled/>
+          <Panel header="Atribut Tambahan" toggleable collapsed>
+            <div className="row">
+                <div className='col-lg-6 col-12 mb-0'>
+                <label htmlFor="fc_potransport" className='font-bold block mb-1'>Transport</label>
+                <InputText value={dataPO.fc_potransport} className='w-full' disabled/>
+                </div>
+                <div className='col-lg-6 col-12 mb-0'>
+                <label htmlFor="fv_destination" className='font-bold block mb-1'>Destinasi</label>
+                <InputText value={dataPO.fv_destination} className='w-full' disabled/>
+                </div>
             </div>
-            <div className='col-lg-6 col-12 mb-0'>
-              <label htmlFor="fv_destination" className='font-bold block mb-1'>Destinasi</label>
-              <InputText value={dataPO.fv_destination} className='w-full' disabled/>
+            <div className="row">
+                <div className='col-12 mb-0'>
+                <label htmlFor="ft_description" className='font-bold block mb-1'>Catatan</label>
+                <InputTextarea value={dataPO.ft_description} className='w-full' rows={1} disabled/>
+                </div>
             </div>
-          </div>
-          <div className="row">
-            <div className='col-12 mb-0'>
-              <label htmlFor="ft_description" className='font-bold block mb-1'>Catatan</label>
-              <InputTextarea value={dataPO.ft_description} className='w-full' rows={1} disabled/>
-            </div>
-          </div>
-        </Panel>
+          </Panel>
         </div>
         <div className='col-lg-6 col-12 mt-3 py-0'>
-          <Panel header="Kalkulasi">
+          <Panel header="Kalkulasi" toggleable collapsed>
             <div className="row">
               <div className="col">
                 <div className="d-flex justify-content-between align-items-center mb-4">
@@ -277,6 +324,34 @@ const DetailPurchaseOrder = () => {
         </div>
       </div>
 
+      <Panel header="Daftar Receiving Order" className='mt-3' toggleable>
+        <DataTable 
+          value={listRO} dataKey='fc_rono'
+          tablestyle={{minwidth:'50rem'}} 
+          paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} 
+          removableSort scrollable 
+          header={() => renderHeaderButton("fas fa-clipboard-list iconHeader", ROFilterValue, onROFilterChange)} 
+          filters={ROfilters} globalFilterFields={[
+            'fc_rono',
+            'fc_sjno',
+            'fc_pono',
+            'fd_roarrivaldate',
+            'fc_status',
+            'fn_rodetail',
+            'ft_description'
+          ]} 
+        >
+          <Column field='fc_rono' header="No. RO" sortable style={{minWidth: '10rem'}}></Column>
+          <Column field='fc_sjno' header="Surat Jalan" sortable style={{minWidth: '10rem'}}></Column>
+          <Column field='fc_pono' header="No. PO" sortable style={{minWidth: '10rem'}}></Column>
+          <Column field='fd_roarrivaldate' header="Tgl Diterima" body={(data) => formattedDateWithOutTime(data.fd_roarrivaldate)} sortable style={{minWidth: '12rem'}}></Column>
+          <Column field='fc_status' header="Status" sortable body={(data) => statusTemplate(data.fc_status, "DOC")} style={{minWidth: '7rem'}}></Column>
+          <Column field='fn_rodetail' header="Item" sortable style={{minWidth: '5rem'}}></Column>
+          <Column field='ft_description' header="Catatan" sortable style={{minWidth: '12rem'}}></Column>
+          <Column body={actionBodyTemplate} ></Column>
+        </DataTable>
+      </Panel>
+
       <div className='d-flex justify-content-end gap-2 mt-3'>
         <Button className='buttonAction' label='Kembali' severity='info' onClick={() => navigate(-1)}></Button>
       </div>
@@ -284,4 +359,4 @@ const DetailPurchaseOrder = () => {
   )
 }
 
-export default DetailPurchaseOrder
+export default DetailPO

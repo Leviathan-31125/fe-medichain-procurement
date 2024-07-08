@@ -15,7 +15,7 @@ const SuccessDialog = ({visibility, nextAction, successMessage, headerTitle}) =>
     <Dialog visible={visibility} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
         header={headerTitle} footer={verifDialogFooter} onHide={nextAction}>
         <div className="confirmation-content text-center">
-            <i className="pi-file-check"  style={{ fontSize: '6rem', color: 'var(--yellow-500)' }}/>
+            <i className="pi pi-file-check"  style={{ fontSize: '6rem', color: 'var(--yellow-500)' }}/>
             <h5 className='mt-4'>{successMessage}</h5>
         </div>
     </Dialog>

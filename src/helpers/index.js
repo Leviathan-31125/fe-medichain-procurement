@@ -59,6 +59,8 @@ export const getSeverity = (type, value) => {
                 return "danger"
             case "FINISH":
                 return "success"
+            case "DITERIMA":
+                return "success"
             case "REJECT":
                 return "danger"
             default:

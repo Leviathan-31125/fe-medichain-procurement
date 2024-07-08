@@ -1,9 +1,17 @@
-.cardSo {
+.cardPO {
     width: 40%;
 }
 
-.cardCustomer {
+.cardSupplier {
     width: 60%;
+}
+
+.dropdown-destination {
+    width: 35%;
+}
+
+.input-destination {
+    width: 65%;
 }
 
 .p-disabled, .p-component-disabled {
@@ -43,11 +51,19 @@
 }
 
 @media screen and (max-width: 1000px) {
-    .cardSo {
+    .cardPO {
         width: 100%;
     }
     
-    .cardCustomer {
+    .cardSupplier {
         width: 100%;
+    }
+
+    .dropdown-destination {
+        width: 50%;
+    }
+    
+    .input-destination {
+        width: 50%;
     }
 }
