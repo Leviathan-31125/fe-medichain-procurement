@@ -153,7 +153,7 @@ const DetailPO = () => {
 
       <div className="flex gap-3">
         <Panel 
-          header="Info SO" 
+          header="Info PO" 
           className='cardPO'
           toggleable
         >
@@ -175,7 +175,7 @@ const DetailPO = () => {
           </div>
           <div className='row'>
             <div className='col-lg-8 col-sm-12 col-12 mb-2'>
-              <label htmlFor="fd_sodate_user" className='font-bold block mb-1'>Pajak - Kode Supplier</label>
+              <label htmlFor="fd_podate_user" className='font-bold block mb-1'>Pajak - Kode Supplier</label>
               <InputText value={`${dataPO.fc_suppliertaxcode} - ${dataPO.fc_suppliercode}`} className='w-full'/>
             </div>
             <div className='col-lg-4 col-sm-12 col-12 mb-2'>

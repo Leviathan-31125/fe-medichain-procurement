@@ -166,7 +166,7 @@ const PreviewListPO = () => {
           ]} 
           header={renderHeader}
         >
-          <Column field='fc_pono' header="No. SO" sortable style={{minWidth: '10rem'}}></Column>
+          <Column field='fc_pono' header="No. RO" sortable style={{minWidth: '10rem'}}></Column>
           <Column field='supplier.fv_suppliername' header="Supplier" sortable style={{minWidth: '10rem'}}></Column>
           <Column field='fd_podate_user' header="Tanggal PO" body={(data) => formattedDateWithOutTime(data.fd_podate_user)} sortable style={{minWidth: '10rem'}}></Column>
           <Column field='fd_poexpired' header="Expired PO" body={(data) => formattedDateWithOutTime(data.fd_poexpired) } sortable style={{minWidth: '10rem'}}></Column>
