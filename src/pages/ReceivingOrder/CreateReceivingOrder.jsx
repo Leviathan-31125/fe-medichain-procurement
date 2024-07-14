@@ -56,9 +56,11 @@ const CreateReceivingOrder = () => {
       .then((response) => {
         setListWarehouse(response.data);
         setLoadingWarehouse(false);
+        const warehousecode = response.data.filter((gudang) => gudang.fv_warehouseaddress === dataPO.fv_destination)[0].fc_warehousecode
+
         setDataRO((currentData) => ({
           ...currentData,
-          fc_warehousecode: response.data.filter((warehouse) => warehouse.fv_warehouseaddress === dataPO.fv_destination)[0].fc_warehousecode
+          fc_warehousecode: warehousecode
         }));
       })
       .catch((error) => {
